@@ -20,7 +20,7 @@ type hookImpl struct {
 func NewHook(writer io.Writer, tag string) (logrus.Hook, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	return &hookImpl{writer, hostname, tag}, nil
 }
@@ -36,7 +36,7 @@ func (*hookImpl) Levels() []logrus.Level {
 	}
 }
 
-func (hook *hookImpl) Fire(*logrus.Entry) error {
+func (hook *hookImpl) Fire(entry *logrus.Entry) error {
 	date := time.Now().Format(format)
 	msg, err := entry.String()
 	if err != nil {
@@ -49,6 +49,6 @@ func (hook *hookImpl) Fire(*logrus.Entry) error {
 		hook.tag,
 		msg,
 	)
-	_, err := hook.Write([]byte(payload))
+	_, err = hook.Write([]byte(payload))
 	return err
 }
